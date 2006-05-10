@@ -10,7 +10,8 @@ module ActiveRecord
       def acts_as_ordered(options = {})
         options.assert_valid_keys :order, :wrap, :condition
         
-        options[:order] = options[:order] ? "#{options[:order]}, \#{self.class.primary_key}" : "\#{self.class.primary_key}"
+        options[:order]     = options[:order] ? "#{options[:order]}, \#{self.class.primary_key}" : "\#{self.class.primary_key}"
+        options[:condition] = options[:condition].to_proc rescue nil
         
         class_eval <<-END
           def adjacent_id(number)

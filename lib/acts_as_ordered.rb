@@ -30,14 +30,12 @@ module ActiveRecord
         end
         
         class_eval <<-END
+          cattr_accessor :_adjacent_condition
+          
           #{scope_condition_method}
         
           def ordered_ids
             connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE \#{ordered_scope_condition} ORDER BY #{options[:order]}").collect(&:to_i)
-          end
-          
-          def current_index
-            index = ordered_ids.index(self.id)
           end
           
           def adjacent_id(number)
@@ -45,6 +43,28 @@ module ActiveRecord
             ids.reverse! if number < 0
             index = ids.index(self.id)
             #{options[:wrap] ? 'ids[(index + number.abs) % ids.size]' : 'ids[index + number.abs] || ids.last'}
+          end
+          
+          def adjacent_record(number)
+            record = self
+            loop do
+              adjacent_record = self.class.find(record.adjacent_id(number))
+              matches = self.class._adjacent_condition ? self.class._adjacent_condition.call(adjacent_record) : true
+              
+              return self if (!matches and ![record, adjacent_record].include?(self)) or adjacent_record == self
+              return adjacent_record if matches
+              
+              record = adjacent_record
+              number = 1
+            end
+          end
+          
+          def next(number = 1)
+            adjacent_record(number)
+          end
+          
+          def previous(number = 1)
+            adjacent_record(-number)
           end
           
           def first_id
@@ -72,31 +92,6 @@ module ActiveRecord
           end
         END
         
-        class_eval do
-          cattr_accessor :_adjacent_condition
-          
-          def adjacent_record(number)
-            record = self
-            loop do
-              adjacent_record = self.class.find(record.adjacent_id(number))
-              matches = self.class._adjacent_condition ? self.class._adjacent_condition.call(adjacent_record) : true
-              
-              return self if (!matches and ![record, adjacent_record].include?(self)) or adjacent_record == self
-              return adjacent_record if matches
-              
-              record = adjacent_record
-              number = 1
-            end
-          end
-          
-          def next(number = 1)
-            adjacent_record(number)
-          end
-          
-          def previous(number = 1)
-            adjacent_record(-number)
-          end
-        end
         self._adjacent_condition = options[:condition]
       end
     end

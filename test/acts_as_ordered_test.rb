@@ -42,7 +42,7 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal daffy, bugs.next.next
     
     assert_equal cat, daffy.previous
-    cat.destroy
+    assert cat.destroy
     assert_equal bugs, daffy.previous
   end
   

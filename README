@@ -73,6 +73,7 @@ Problems, comments, and suggestions all welcome. jonathan.viney@gmail.com
   
 == Credits
 
+Atelier Fabien - Support for :scope =>
 Rick Olson - I borrowed some of the testing code from acts_as_versioned
 
 == Misc

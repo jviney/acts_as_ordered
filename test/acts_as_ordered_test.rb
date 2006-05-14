@@ -100,6 +100,20 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal funny_cartoons(:bugs), bugs.next(3)
   end
   
+  def test_current_index_and_position
+    assert_equal 0, cartoons(:bugs).current_index
+    assert_equal 1, cartoons(:bugs).current_position
+    assert_equal 1, cartoons(:daffy).current_index
+    assert_equal 2, cartoons(:daffy).current_position
+    assert_equal 2, cartoons(:bugs).next.current_position
+    assert_equal 4, cartoons(:bugs).last.current_position
+    assert_equal 4, cartoons(:roger).current_position
+  end
+  
+  def test_current_total
+    assert_equal 4, cartoons(:bugs).current_total
+  end
+  
  private
   def find_cartoon(name, klass)
     klass.find(cartoons(name).id)
@@ -218,7 +232,12 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
     assert_equal wrapped_sql_scoped_projects(:three), wrapped_sql_scoped_projects(:one).next.next
     assert_equal wrapped_sql_scoped_projects(:one), wrapped_sql_scoped_projects(:three).next
   end
-
+  
+  def test_current_total
+    assert_equal 3, projects(:one).current_total
+    assert_equal 4, projects(:four).current_total
+  end
+  
  private
   def find_project(name, klass)
     klass.find(projects(name).id)

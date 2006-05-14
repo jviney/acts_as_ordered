@@ -59,6 +59,18 @@ module ActiveRecord
             end
           end
           
+          def current_total
+            self.class.count :conditions => ordered_scope_condition
+          end
+          
+          def current_index
+            ordered_ids.index(id)
+          end
+          
+          def current_position
+            current_index + 1
+          end
+          
           def next(number = 1)
             adjacent_record(number)
           end

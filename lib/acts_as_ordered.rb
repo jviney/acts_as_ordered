@@ -55,7 +55,7 @@ module ActiveRecord
               return adjacent_record if matches
               
               record = adjacent_record
-              number = 1
+              number = number < 0 ? -1 : 1
             end
           end
           

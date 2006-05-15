@@ -96,8 +96,10 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal funny_cartoons(:daffy), bugs.next
     assert_equal funny_cartoons(:elmer), bugs.next.next
     assert_equal funny_cartoons(:bugs), bugs.next.next.next
-    
     assert_equal funny_cartoons(:bugs), bugs.next(3)
+    
+    assert_equal funny_cartoons(:elmer), bugs.previous
+    assert_equal funny_cartoons(:daffy), bugs.previous(3)
   end
   
   def test_current_index_and_position

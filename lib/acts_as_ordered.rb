@@ -87,7 +87,7 @@ module ActiveRecord
         end
         
         def find_by_direction(direction, number = 1)
-          [:next, :previous].include?(direction) ? send(direction, number) : raise("valid directions are next and previous")
+          ['next', 'previous'].include?(direction.to_s) ? send(direction, number) : raise("valid directions are next and previous")
         end
         
         def first_id

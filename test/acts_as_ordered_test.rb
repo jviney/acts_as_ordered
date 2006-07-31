@@ -33,6 +33,15 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal bugs, bugs.next.next.next.next.next.next.previous.previous.previous.previous.previous.previous
   end
   
+  def test_find_by_direction
+    assert_equal cartoons(:bugs), cartoons(:bugs).find_by_direction(:previous)
+    
+    assert_equal cartoons(:daffy), cartoons(:bugs).find_by_direction(:next)
+    assert_equal cartoons(:roger), cartoons(:bugs).find_by_direction(:next, 5)
+    
+    assert_raises(RuntimeError) { cartoons(:bugs).find_by_direction('destroy') }
+  end
+  
   def test_insert_and_remove
     bugs, daffy = cartoons(:bugs), cartoons(:daffy)
     

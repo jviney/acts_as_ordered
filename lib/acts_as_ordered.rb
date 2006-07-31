@@ -39,7 +39,7 @@ module ActiveRecord
             end
             
             def ordered_ids
-              connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE \#{ordered_scope_condition} ORDER BY #{options[:order]}").collect(&:to_i)
+              connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE \#{ordered_scope_condition} ORDER BY #{options[:order]}").collect { |id| id.to_i }
             end
           END
           
@@ -67,7 +67,7 @@ module ActiveRecord
         end
         
         def current_total
-          self.class.count :conditions => ordered_scope_condition
+          self.class.count ordered_scope_condition
         end
         
         def current_index
@@ -84,6 +84,10 @@ module ActiveRecord
         
         def previous(number = 1)
           adjacent_record(-number)
+        end
+        
+        def find_by_direction(direction, number = 1)
+          [:next, :previous].include?(direction) ? send(direction, number) : raise("valid directions are next and previous")
         end
         
         def first_id

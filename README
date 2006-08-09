@@ -52,7 +52,7 @@ You can use this in a application to be able to quickly browse through people. E
   class PersonController < ApplicationController
     def view_neighbour
       # params[:direction] is passed off the page as 'next' or 'previous'
-      @person = Person.find(params[:id]).send(params[:direction])
+      @person = Person.find(params[:id]).find_by_direction(params[:direction])
       render :action => 'view'
     end
     

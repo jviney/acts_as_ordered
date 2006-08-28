@@ -54,7 +54,7 @@ module ActiveRecord
         def adjacent_record(number)
           previous_record = self
           loop do
-            adjacent_record = self.class.find(previous_record.adjacent_id(number))
+            adjacent_record = self.class.base_class.find(previous_record.adjacent_id(number))
             matches = self.class._adjacent_condition ? self.class._adjacent_condition.call(adjacent_record) : true
             
             return adjacent_record if matches
@@ -67,7 +67,7 @@ module ActiveRecord
         end
         
         def current_total
-          self.class.count ordered_scope_condition
+          self.class.base_class.count ordered_scope_condition
         end
         
         def current_index
@@ -99,11 +99,11 @@ module ActiveRecord
         end
         
         def first
-          self.class.find(first_id)
+          self.class.base_class.find(first_id)
         end
         
         def last
-          self.class.find(last_id)
+          self.class.base_class.find(last_id)
         end
         
         def first?

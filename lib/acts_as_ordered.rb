@@ -39,7 +39,10 @@ module ActiveRecord
             end
             
             def ordered_ids
-              connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE \#{ordered_scope_condition} ORDER BY #{options[:order]}").collect { |id| id.to_i }
+              conditions = []
+              conditions << self.class.send(:type_condition) unless self.class.descends_from_active_record?
+              conditions << ordered_scope_condition
+              connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE (\#{conditions.join(') AND (')}) ORDER BY #{options[:order]}").map(&:to_i)
             end
           END
           
@@ -51,10 +54,10 @@ module ActiveRecord
       end
       
       module InstanceMethods
-        def adjacent_record(number)
-          previous_record = self
+        def adjacent_record(options = {})
+          previous_record, number = self, options.delete(:number)
           loop do
-            adjacent_record = self.class.base_class.find(previous_record.adjacent_id(number))
+            adjacent_record = self.class.base_class.find(previous_record.adjacent_id(number), options.dup)
             matches = self.class._adjacent_condition ? self.class._adjacent_condition.call(adjacent_record) : true
             
             return adjacent_record if matches
@@ -67,7 +70,7 @@ module ActiveRecord
         end
         
         def current_total
-          self.class.base_class.count ordered_scope_condition
+          self.class.base_class.count :conditions => ordered_scope_condition
         end
         
         def current_index
@@ -78,16 +81,20 @@ module ActiveRecord
           current_index + 1
         end
         
-        def next(number = 1)
-          adjacent_record(number)
+        def next(options = {})
+          options = options.reverse_merge(:number => 1)
+          adjacent_record(options)
         end
         
-        def previous(number = 1)
-          adjacent_record(-number)
+        def previous(options = {})
+          options = options.reverse_merge(:number => 1)
+          options[:number] = -options[:number]
+          adjacent_record(options)
         end
         
-        def find_by_direction(direction, number = 1)
-          ['next', 'previous'].include?(direction.to_s) ? send(direction, number) : raise("valid directions are next and previous")
+        def find_by_direction(direction, options = {})
+          direction = direction.to_s
+          ['next', 'previous'].include?(direction) ? send(direction, options) : raise("valid directions are next and previous")
         end
         
         def first_id

@@ -13,4 +13,9 @@ ActiveRecord::Schema.define :version => 0 do
     t.column :name,        :string  
     t.column :description, :string
   end
+  
+  create_table :documents, :force => true do |t|
+    t.column :title, :string
+    t.column :type, :string
+  end
 end

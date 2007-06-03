@@ -1,7 +1,4 @@
 require File.join(File.dirname(__FILE__), 'abstract_unit')
-require File.join(File.dirname(__FILE__), 'fixtures', 'cartoon')
-require File.join(File.dirname(__FILE__), 'fixtures', 'category')
-require File.join(File.dirname(__FILE__), 'fixtures', 'project')
 
 class ActsAsOrderedTest < Test::Unit::TestCase
   fixtures :cartoons
@@ -37,7 +34,7 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal cartoons(:bugs), cartoons(:bugs).find_by_direction(:previous)
     
     assert_equal cartoons(:daffy), cartoons(:bugs).find_by_direction(:next)
-    assert_equal cartoons(:roger), cartoons(:bugs).find_by_direction(:next, 5)
+    assert_equal cartoons(:roger), cartoons(:bugs).find_by_direction(:next, :number => 5)
     
     assert_raises(RuntimeError) { cartoons(:bugs).find_by_direction('destroy') }
   end
@@ -75,28 +72,28 @@ class ActsAsOrderedTest < Test::Unit::TestCase
   def test_jump_multiple_no_wrapping
     daffy = cartoons(:daffy)
     
-    assert_equal cartoons(:roger), daffy.next(2)
-    assert_equal cartoons(:roger), daffy.next(100)
-    assert_equal cartoons(:bugs), daffy.previous(10)
+    assert_equal cartoons(:roger), daffy.next(:number => 2)
+    assert_equal cartoons(:roger), daffy.next(:number => 100)
+    assert_equal cartoons(:bugs), daffy.previous(:number => 10)
   end
   
   def test_jump_multiple_with_wrapping
     roger = wrapped_cartoons(:roger)
     
-    assert_equal roger, roger.previous(4)
-    assert_equal roger, roger.next(4)
+    assert_equal roger, roger.previous(:number => 4)
+    assert_equal roger, roger.next(:number => 4)
     
-    assert_equal wrapped_cartoons(:elmer), roger.previous(9)
-    assert_equal wrapped_cartoons(:bugs), roger.next(13)
+    assert_equal wrapped_cartoons(:elmer), roger.previous(:number => 9)
+    assert_equal wrapped_cartoons(:bugs), roger.next(:number => 13)
   end
   
   def test_with_condition
     elmer = silly_cartoons(:elmer)
     
     assert_equal silly_cartoons(:roger), elmer.next
-    assert_equal silly_cartoons(:roger), elmer.next(10)
+    assert_equal silly_cartoons(:roger), elmer.next(:number => 10)
     assert_equal silly_cartoons(:elmer), elmer.previous
-    assert_equal silly_cartoons(:elmer), elmer.previous(3)
+    assert_equal silly_cartoons(:elmer), elmer.previous(:number => 3)
   end
   
   def test_with_condition_and_wrapping
@@ -105,10 +102,10 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal funny_cartoons(:daffy), bugs.next
     assert_equal funny_cartoons(:elmer), bugs.next.next
     assert_equal funny_cartoons(:bugs), bugs.next.next.next
-    assert_equal funny_cartoons(:bugs), bugs.next(3)
+    assert_equal funny_cartoons(:bugs), bugs.next(:number => 3)
     
     assert_equal funny_cartoons(:elmer), bugs.previous
-    assert_equal funny_cartoons(:daffy), bugs.previous(3)
+    assert_equal funny_cartoons(:daffy), bugs.previous(:number => 3)
   end
   
   def test_current_index_and_position
@@ -249,8 +246,27 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
     assert_equal 4, projects(:four).current_total
   end
   
+  def test_with_options
+    project = wrapped_projects(:one).next(:include => :category)
+    assert project.instance_variable_get('@category')
+  end
+  
  private
   def find_project(name, klass)
     klass.find(projects(name).id)
+  end
+end
+
+class ActsAsOrderedStiTest < Test::Unit::TestCase
+  fixtures :documents
+  
+  def test_subclasses
+    assert_equal documents(:entry_2), documents(:entry_1).next
+    assert_equal documents(:entry_3), documents(:entry_2).next
+    assert_equal documents(:entry_2), documents(:entry_3).previous
+    assert_equal documents(:entry_1), documents(:entry_2).previous
+    
+    assert_equal documents(:page_2), documents(:page_1).next
+    assert_equal documents(:page_1), documents(:page_2).previous
   end
 end

@@ -38,19 +38,22 @@ You can also jump by more than one at a time:
 
   # Without wrapping (clamps to ends)
   p = Person.find_by_first_name('Jonathan')
-  p.next(2)       # Robert
-  p.next(100)     # Robert
-  p.previous(100) # Jonathan
+  p.next(:number => 2)       # Robert
+  p.next(:number => 100)     # Robert
+  p.previous(:number => 100) # Jonathan
   
   # With wrapping (wraps around ends as many times as you like)
   p = Person.find_by_first_name('Jonathan')
-  p.next(8)       # Adam
-  p.previous(17)  # Robert
+  p.next(:number => 8)       # Adam
+  p.previous(:number => 17)  # Robert
   
 You can use this to get the next/previous model that matches some condition:
 
   class Person < ActiveRecord::Base
-    acts_as_ordered :condition => Proc.new { |p| p.active? }
+    acts_as_ordered :condition => proc { |p| p.age > 10 }
+    
+    # Or check that a method on the model returns true
+    acts_as_ordered :conditions => :male?
   end
   
 In this case, the next and previous methods will return the closest adjacent object that matches the condition.

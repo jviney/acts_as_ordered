@@ -269,4 +269,13 @@ class ActsAsOrderedStiTest < Test::Unit::TestCase
     assert_equal documents(:page_2), documents(:page_1).next
     assert_equal documents(:page_1), documents(:page_2).previous
   end
+  
+  def test_subclasses_without_sti_scoping
+    Document.acts_as_ordered :ignore_sti => true
+    
+    assert_equal documents(:page_1), documents(:entry_2).next
+    assert_equal documents(:page_2), documents(:document_2).previous
+  ensure
+    Document.acts_as_ordered
+  end
 end

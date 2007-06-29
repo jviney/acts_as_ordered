@@ -7,7 +7,7 @@ module ActiveRecord
       
       module ClassMethods
         def acts_as_ordered(options = {})
-          options.assert_valid_keys :order, :wrap, :condition, :scope
+          options.assert_valid_keys :order, :wrap, :condition, :scope, :ignore_sti
           
           options[:order]     = options[:order] ? "#{options[:order]}, #{primary_key}" : primary_key
           options[:condition] = options[:condition].to_proc if options[:condition].is_a?(Symbol)
@@ -40,7 +40,7 @@ module ActiveRecord
             
             def ordered_ids
               conditions = []
-              conditions << self.class.send(:type_condition) unless self.class.descends_from_active_record?
+              #{'conditions << self.class.send(:type_condition) unless self.class.descends_from_active_record?' unless options[:ignore_sti]}
               conditions << ordered_scope_condition
               connection.select_values("SELECT #{primary_key} FROM #{table_name} WHERE (\#{conditions.join(') AND (')}) ORDER BY #{options[:order]}").map(&:to_i)
             end

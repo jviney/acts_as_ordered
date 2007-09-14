@@ -13,7 +13,7 @@ This plugin gives ActiveRecord models an easy way to find their neighbours in a 
 == Resources
 
 Install
-  * script/plugin install http://svn.viney.net.nz/things/trunk/rails_plugins/acts_as_ordered
+  * script/plugin install http://svn.viney.net.nz/things/rails/plugins/acts_as_ordered
 
 == Usage
 

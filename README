@@ -13,7 +13,7 @@ This plugin gives ActiveRecord models an easy way to find their neighbours in a 
 == Resources
 
 Install
-  * script/plugin install http://svn.viney.net.nz/things/rails/plugins/acts_as_ordered
+  * script/plugin install http://svn.viney.net.nz/things/trunk/rails_plugins/acts_as_ordered
 
 == Usage
 
@@ -86,8 +86,3 @@ Problems, comments, and suggestions all welcome. jonathan.viney@gmail.com
 
 Atelier Fabien - Support for :scope =>
 Rick Olson - I borrowed some of the testing code from acts_as_versioned
-
-== Misc
-
-Subversion
- * http://svn.viney.net.nz/things/rails/plugins/acts_as_ordered

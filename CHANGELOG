@@ -1,3 +1,7 @@
+[28 September 2007]
+
+* Refactoring.
+
 [29 June 2007]
 
 * Add :ignore_sti option to allow next and previous to iterate over all models.

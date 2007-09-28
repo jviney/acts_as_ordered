@@ -3,22 +3,6 @@ require File.join(File.dirname(__FILE__), 'abstract_unit')
 class ActsAsOrderedTest < Test::Unit::TestCase
   fixtures :cartoons
   
-  def wrapped_cartoons(name)
-    find_cartoon(name, WrappedCartoon)
-  end
-  
-  def reversed_cartoons(name)
-    find_cartoon(name, ReversedCartoon)
-  end
-  
-  def funny_cartoons(name)
-    find_cartoon(name, FunnyCartoon)
-  end
-  
-  def silly_cartoons(name)
-    find_cartoon(name, SillyCartoon)
-  end
-  
   def test_normal
     bugs = cartoons(:bugs)
     
@@ -36,7 +20,7 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal cartoons(:daffy), cartoons(:bugs).find_by_direction(:next)
     assert_equal cartoons(:roger), cartoons(:bugs).find_by_direction(:next, :number => 5)
     
-    assert_raises(RuntimeError) { cartoons(:bugs).find_by_direction('destroy') }
+    assert_raises(ActiveRecord::Acts::Ordered::InvalidDirection) { cartoons(:bugs).find_by_direction('destroy') }
   end
   
   def test_insert_and_remove
@@ -126,22 +110,26 @@ class ActsAsOrderedTest < Test::Unit::TestCase
   def find_cartoon(name, klass)
     klass.find(cartoons(name).id)
   end
+  
+  def wrapped_cartoons(name)
+    find_cartoon(name, WrappedCartoon)
+  end
+  
+  def reversed_cartoons(name)
+    find_cartoon(name, ReversedCartoon)
+  end
+  
+  def funny_cartoons(name)
+    find_cartoon(name, FunnyCartoon)
+  end
+  
+  def silly_cartoons(name)
+    find_cartoon(name, SillyCartoon)
+  end
 end
 
 class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
   fixtures :categories, :projects
-  
-  def wrapped_projects(name)
-    find_project(name, WrappedProject)
-  end
-  
-  def sql_scoped_projects(name)
-    find_project(name, SQLScopedProject)
-  end
-  
-  def wrapped_sql_scoped_projects(name)
-    find_project(name, WrappedSQLScopedProject)
-  end
   
   def test_first_and_last_a
     assert projects(:one).first?
@@ -255,6 +243,18 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
   def find_project(name, klass)
     klass.find(projects(name).id)
   end
+  
+  def wrapped_projects(name)
+    find_project(name, WrappedProject)
+  end
+  
+  def sql_scoped_projects(name)
+    find_project(name, SQLScopedProject)
+  end
+  
+  def wrapped_sql_scoped_projects(name)
+    find_project(name, WrappedSQLScopedProject)
+  end
 end
 
 class ActsAsOrderedStiTest < Test::Unit::TestCase
@@ -271,11 +271,11 @@ class ActsAsOrderedStiTest < Test::Unit::TestCase
   end
   
   def test_subclasses_without_sti_scoping
-    Document.acts_as_ordered :ignore_sti => true
+    Document._acts_as_ordered_options[:ignore_sti] = true
     
     assert_equal documents(:page_1), documents(:entry_2).next
     assert_equal documents(:page_2), documents(:document_2).previous
   ensure
-    Document.acts_as_ordered
+    Document._acts_as_ordered_options.delete(:ignore_sti)
   end
 end

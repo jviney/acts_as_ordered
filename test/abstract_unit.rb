@@ -1,20 +1,16 @@
 require 'test/unit'
 
 begin
-  require File.dirname(__FILE__) + '/../../../../config/boot'
-  Rails::Initializer.run
+  require File.dirname(__FILE__) + '/../../../../config/environment'
 rescue LoadError
   require 'rubygems'
-  require_gem 'activerecord'
+  gem 'activerecord'
+  require 'active_record'
 end
 
 # Search for fixtures first
 fixture_path = File.dirname(__FILE__) + '/fixtures/'
-begin
-  Dependencies.load_paths.insert(0, fixture_path)
-rescue
-  $LOAD_PATH.unshift(fixture_path)
-end
+Dependencies.load_paths.insert(0, fixture_path)
 
 ActiveRecord::Base.configurations = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/debug.log')

@@ -239,6 +239,11 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
     assert project.instance_variable_get('@category')
   end
   
+  def test_order_with_join
+    assert_equal project_ordered_by_categories(:seven), project_ordered_by_categories(:two).first
+    assert_equal project_ordered_by_categories(:one), project_ordered_by_categories(:two).last
+  end
+  
  private
   def find_project(name, klass)
     klass.find(projects(name).id)
@@ -254,6 +259,10 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
   
   def wrapped_sql_scoped_projects(name)
     find_project(name, WrappedSQLScopedProject)
+  end
+  
+  def project_ordered_by_categories(name)
+    find_project(name, ProjectOrderedByCategory)
   end
 end
 

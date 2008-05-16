@@ -10,9 +10,9 @@ module ActiveRecord
       
       module ClassMethods
         def acts_as_ordered(options = {})
-          options.assert_valid_keys :order, :wrap, :condition, :scope, :ignore_sti
+          options.assert_valid_keys :order, :wrap, :condition, :scope, :ignore_sti, :joins
           
-          options[:order]     = options[:order] ? "#{options[:order]}, #{primary_key}" : primary_key
+          options[:order]     = options[:order] ? "#{options[:order]}, #{table_name}.#{primary_key}" : primary_key
           options[:condition] = options[:condition].to_proc if options[:condition].is_a?(Symbol)
           options[:scope]     = "#{options[:scope]}_id".to_sym if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
           
@@ -61,7 +61,11 @@ module ActiveRecord
           
           sql_conditions = "WHERE #{conditions.join(') AND (')}" if conditions.any?
           
-          connection.select_values("SELECT #{self.class.primary_key} FROM #{self.class.table_name} #{sql_conditions} ORDER BY #{options[:order]}").map!(&:to_i)
+          sql = "SELECT #{self.class.table_name}.#{self.class.primary_key} FROM #{self.class.table_name}"
+          self.class.send(:add_joins!, sql, { :joins => options[:joins] })
+          sql << "#{sql_conditions} ORDER BY #{options[:order]}"
+          
+          connection.select_values(sql).map!(&:to_i)
         end
         
         def adjacent_record(options = {})

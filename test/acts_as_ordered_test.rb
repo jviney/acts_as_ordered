@@ -106,6 +106,15 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal 4, cartoons(:bugs).current_total
   end
   
+  def test_first_and_last_after_last_record_destroyed
+    cartoon = cartoons(:bugs)
+    
+    Cartoon.destroy_all
+    
+    assert_nil cartoon.first
+    assert_nil cartoon.last
+  end
+  
  private
   def find_cartoon(name, klass)
     klass.find(cartoons(name).id)

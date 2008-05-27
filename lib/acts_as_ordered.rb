@@ -120,11 +120,11 @@ module ActiveRecord
         end
         
         def first
-          self.class.base_class.find(first_id)
+          self.class.base_class.find_by_id(first_id)
         end
         
         def last
-          self.class.base_class.find(last_id)
+          self.class.base_class.find_by_id(last_id)
         end
         
         def first_id

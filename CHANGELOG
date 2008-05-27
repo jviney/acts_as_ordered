@@ -1,3 +1,7 @@
+[27 May 2008]
+
+* Fix #first and #last after last record destroyed.
+
 [16 May 2008]
 
 * Add :joins option.

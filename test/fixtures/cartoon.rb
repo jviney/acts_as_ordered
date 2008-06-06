@@ -14,12 +14,12 @@ end
 
 class SillyCartoon < ActiveRecord::Base
   set_table_name  :cartoons
-  acts_as_ordered :condition => Proc.new { |c| c.first_name =~ /e/i }
+  acts_as_ordered :if => Proc.new { |c| c.first_name =~ /e/i }
 end
 
 class FunnyCartoon < ActiveRecord::Base
   set_table_name  :cartoons
-  acts_as_ordered :condition => Proc.new { |r| r.last_name_contains_u? }, :wrap => true
+  acts_as_ordered :if => [Proc.new { |r| r.last_name_contains_u? }], :wrap => true
   
   def last_name_contains_u?
     last_name =~ /u/

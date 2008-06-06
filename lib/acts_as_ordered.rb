@@ -10,11 +10,11 @@ module ActiveRecord
       
       module ClassMethods
         def acts_as_ordered(options = {})
-          options.assert_valid_keys :order, :wrap, :condition, :scope, :ignore_sti, :joins
+          options.assert_valid_keys :order, :wrap, :if, :scope, :ignore_sti, :joins
           
-          options[:order]     = options[:order] ? "#{options[:order]}, #{table_name}.#{primary_key}" : primary_key
-          options[:condition] = options[:condition].to_proc if options[:condition].is_a?(Symbol)
-          options[:scope]     = "#{options[:scope]}_id".to_sym if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
+          options[:order] = options[:order] ? "#{options[:order]}, #{table_name}.#{primary_key}" : primary_key
+          options[:if]    = Array(options[:if]).map { |c| c.is_a?(Symbol) ? c.to_proc : c }
+          options[:scope] = "#{options[:scope]}_id".to_sym if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
           
           cattr_accessor :_acts_as_ordered_options
           self._acts_as_ordered_options = options
@@ -73,7 +73,7 @@ module ActiveRecord
           
           loop do
             adjacent_record = self.class.base_class.find(previous_record.adjacent_id(number), options.dup)
-            matches = ordered_options[:condition] ? ordered_options[:condition].call(adjacent_record) : true
+            matches = ordered_options[:if].any? ? ordered_options[:if].all? { |c| c.call(adjacent_record) } : true
             
             return adjacent_record if matches
             return self if adjacent_record == self # If the search for a matching record failed

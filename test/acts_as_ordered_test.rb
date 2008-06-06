@@ -71,7 +71,7 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal wrapped_cartoons(:bugs), roger.next(:number => 13)
   end
   
-  def test_with_condition
+  def test_with_if
     elmer = silly_cartoons(:elmer)
     
     assert_equal silly_cartoons(:roger), elmer.next
@@ -80,7 +80,13 @@ class ActsAsOrderedTest < Test::Unit::TestCase
     assert_equal silly_cartoons(:elmer), elmer.previous(:number => 3)
   end
   
-  def test_with_condition_and_wrapping
+  def test_with_multiple_if
+    SillyCartoon._acts_as_ordered_options[:if] << proc { false }
+    
+    assert_equal silly_cartoons(:elmer), silly_cartoons(:elmer).next
+  end
+  
+  def test_with_if_and_wrapping
     bugs = funny_cartoons(:bugs)
     
     assert_equal funny_cartoons(:daffy), bugs.next

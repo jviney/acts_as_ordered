@@ -282,7 +282,7 @@ class ActsAsOrderedWithScopeTest < Test::Unit::TestCase
 end
 
 class ActsAsOrderedStiTest < Test::Unit::TestCase
-  fixtures :documents
+  fixtures :documents, :people
   
   def test_subclasses
     assert_equal documents(:entry_2), documents(:entry_1).next
@@ -302,4 +302,8 @@ class ActsAsOrderedStiTest < Test::Unit::TestCase
   ensure
     Document._acts_as_ordered_options.delete(:ignore_sti)
   end
+  
+  def test_sti_and_scope
+    assert_equal people(:manager_2), people(:manager_1).next
+  end  
 end

@@ -59,7 +59,7 @@ module ActiveRecord
             conditions << self.class.send(:sanitize_sql, ordered_scope_condition)
           end
           
-          sql_conditions = "WHERE #{conditions.join(') AND (')}" if conditions.any?
+          sql_conditions = "WHERE (#{conditions.join(') AND (')})" if conditions.any?
           
           sql = "SELECT #{self.class.table_name}.#{self.class.primary_key} FROM #{self.class.table_name}"
           self.class.send(:add_joins!, sql, { :joins => options[:joins] })

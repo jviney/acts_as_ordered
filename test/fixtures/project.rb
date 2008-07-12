@@ -3,6 +3,9 @@ class Project < ActiveRecord::Base
   acts_as_ordered :order => 'name', :scope => :category
 end
 
+class StiProject < Project
+end
+
 class WrappedProject < ActiveRecord::Base
   belongs_to :category
   set_table_name :projects

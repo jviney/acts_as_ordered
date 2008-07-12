@@ -1,3 +1,7 @@
+[13 July 2008]
+
+* Fix combination of STI and scoping. [Bojan Mihelac]
+
 [6 June 2008][
 
 * Rename :conditions to :if and allow multiple blocks/symbols.

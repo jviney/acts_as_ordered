@@ -10,7 +10,7 @@ end
 
 # Search for fixtures first
 fixture_path = File.dirname(__FILE__) + '/fixtures/'
-Dependencies.load_paths.insert(0, fixture_path)
+ActiveSupport::Dependencies.load_paths.insert(0, fixture_path)
 
 ActiveRecord::Base.configurations = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/debug.log')

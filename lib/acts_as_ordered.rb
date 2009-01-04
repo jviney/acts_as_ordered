@@ -62,8 +62,15 @@ module ActiveRecord
           sql_conditions = "WHERE (#{conditions.join(') AND (')})" if conditions.any?
           
           sql = "SELECT #{self.class.table_name}.#{self.class.primary_key} FROM #{self.class.table_name}"
-          self.class.send(:add_joins!, sql, { :joins => options[:joins] })
-          sql << "#{sql_conditions} ORDER BY #{options[:order]}"
+          
+          # Rails 2.2 alters :add_joins!. Try the Rails 2.2 way first.
+          begin
+            self.class.send(:add_joins!, sql, { :joins => options[:joins] })
+          rescue
+            self.class.send(:add_joins!, sql, options[:joins])
+          end
+          
+          sql << " #{sql_conditions} ORDER BY #{options[:order]}"
           
           connection.select_values(sql).map!(&:to_i)
         end

@@ -251,7 +251,12 @@ class ActsAsOrderedWithScopeTest < ActiveRecord::TestCase
 
   def test_with_options
     project = wrapped_projects(:one).next(:include => :category)
-    assert project.association(:category).loaded?
+
+    if project.respond_to?(:association) # Rails >= 3.2
+      assert project.association(:category).loaded?
+    else
+      assert project.instance_variable_get("@category")
+    end
   end
 
   def test_order_with_join

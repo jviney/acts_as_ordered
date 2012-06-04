@@ -71,7 +71,8 @@ module ActiveRecord
         end
 
         def ordered_ids
-          ordered_scope.pluck("#{self.class.table_name}.id")
+          sql = ordered_scope.select("#{self.class.table_name}.#{self.class.primary_key}").to_sql
+          connection.select_values(sql)
         end
 
         def adjacent_record(options = {})

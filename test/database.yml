@@ -1,6 +1,6 @@
 mysql:
-  :adapter: mysql
-  :host: localhost
-  :username: rails
-  :password:
-  :database: rails_plugin_test
+  adapter: mysql2
+  host: localhost
+  username: rails
+  password:
+  database: rails_plugin_test
